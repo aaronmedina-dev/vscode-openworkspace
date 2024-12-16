@@ -12,8 +12,8 @@ While there are extensions available for Visual Studio Code that provide robust 
 
 ## Features
 
-- Dynamically loads workspace configurations from a configuration file.
-- Lists all subdirectories in the configured workspaces.
+- Dynamically loads workspaces from a configuration file.
+- Lists all subdirectories in the configured workspaces, sorted by oldest-newest.
 - Provides a simple terminal-based selection interface.
 - Opens the selected folder in Visual Studio Code.
 
@@ -29,8 +29,8 @@ The configuration file should be in a JSON-like format. Each key-value pair repr
 
 ```plaintext
 {
-  "Workspace1": "~/path/to/workspace1",
-  "Workspace2": "~/path/to/workspace2"
+  "Workspace Name": "~/path/to/workspace",
+  "Another Workspace Name": "~/another/path"
 }
 ```
 
@@ -45,6 +45,7 @@ The configuration file should be in a JSON-like format. Each key-value pair repr
    ```bash
    chmod +x vs-openworkspace.sh
    ```
+3. Add workspace/s to `vscode_openworkspaces.conf`
 3. Run the script from the terminal:
    ```bash
    ./vs-openworkspace.sh
