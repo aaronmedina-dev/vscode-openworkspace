@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the directory where the script is located (portable for bash and zsh)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Config file path (relative to the script's directory)
 CONFIG_FILE="$SCRIPT_DIR/vscode_openworkspaces.conf"
@@ -12,18 +12,19 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
   exit 1
 fi
 
-# Load configuration (JSON-like format)
-declare -A WORKSPACES
+# Load configuration (JSON-like format) into two indexed arrays
+workspace_names=()
+workspace_paths=()
+
 while IFS= read -r line; do
   if [[ "$line" =~ \"([^\"]+)\":\ \"([^\"]+)\" ]]; then
-    key="${BASH_REMATCH[1]}"
-    value="${BASH_REMATCH[2]}"
-    WORKSPACES["$key"]="$value"
+    workspace_names+=("${BASH_REMATCH[1]}")
+    workspace_paths+=("${BASH_REMATCH[2]}")
   fi
 done < "$CONFIG_FILE"
 
 # Check if any workspace is configured
-if [[ ${#WORKSPACES[@]} -eq 0 ]]; then
+if [[ ${#workspace_names[@]} -eq 0 ]]; then
   echo "No workspaces configured in $CONFIG_FILE"
   exit 1
 fi
@@ -37,7 +38,6 @@ RESET='\033[0m'
 
 # Collect folder options
 options=()
-workspace_labels=()
 index=1
 
 echo -e """${RED}
@@ -49,8 +49,9 @@ echo -e """${RED}
    ╚═══╝  ╚══════╝       ╚═════╝  ╚══╝╚══╝ ${RESET}v1.0
 """
 
-for workspace in "${!WORKSPACES[@]}"; do
-  workspace_dir="${WORKSPACES[$workspace]}"
+for i in "${!workspace_names[@]}"; do
+  workspace_name="${workspace_names[$i]}"
+  workspace_dir="${workspace_paths[$i]}"
 
   # Expand ~ in paths
   workspace_dir="${workspace_dir/#\~/$HOME}"
@@ -61,8 +62,10 @@ for workspace in "${!WORKSPACES[@]}"; do
     continue
   fi
 
-  # List folders in the workspace directory
-  folders=($(ls -dt "$workspace_dir"/*/ 2>/dev/null))
+  # List folders in the workspace directory, handling spaces
+  while IFS= read -r -d $'\0' folder; do
+    folders+=("$folder")
+  done < <(find "$workspace_dir" -mindepth 1 -maxdepth 1 -type d -print0 | sort -rz)
 
   # Check if any folders are found
   if [[ ${#folders[@]} -eq 0 ]]; then
@@ -71,12 +74,11 @@ for workspace in "${!WORKSPACES[@]}"; do
   fi
 
   # Add folders to options
-  echo -e "Select a folder from ${BLUE}${workspace}${RESET} (${workspace_dir}):"
+  echo -e "Select a folder from ${BLUE}${workspace_name}${RESET} (${workspace_dir}):"
   for folder in "${folders[@]}"; do
     folder_name=$(basename "$folder")
     echo -e "[${GREEN}$index${RESET}] $folder_name"
     options+=("$folder")
-    workspace_labels+=("$workspace")
     ((index++))
   done
   echo
@@ -100,8 +102,7 @@ fi
 
 # Get the selected folder
 target_folder="${options[choice-1]}"
-workspace_label="${workspace_labels[choice-1]}"
 
 # Open the selected folder in VS Code
-echo -e "${GREEN}Opening folder: ${CYAN}${target_folder}${GREEN} from workspace ${CYAN}${workspace_label}${RESET}"
+echo -e "${GREEN}Opening folder: ${CYAN}${target_folder}${RESET}"
 code "$target_folder"
