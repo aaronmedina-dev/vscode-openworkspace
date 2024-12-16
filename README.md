@@ -8,6 +8,8 @@ For developers who prefer to have Visual Studio Code focused on a single project
 
 While there are extensions available for Visual Studio Code that provide robust project management features, this script offers a unique approach. By dynamically loading workspace configurations from a configuration file and listing all subdirectories in the configured workspaces, it ensures that only files related to your current work are visible. This minimizes distractions and keeps your focus on the task at hand.
 
+![Image](assets/vs-ow.jpg)
+
 ## Features
 
 - Dynamically loads workspace configurations from a configuration file.
@@ -17,7 +19,7 @@ While there are extensions available for Visual Studio Code that provide robust 
 
 ## Prerequisites
 
-- **Bash**: Ensure you have a Bash shell environment available.
+- **Bash/Zsh**: Ensure you have a Bash/Zsh shell environment available.
 - **Visual Studio Code**: Make sure VS Code is installed and available in your system's PATH.
 - **Configuration File**: A configuration file named `vscode_openworkspaces.conf` must be placed in the same directory as the script.
 
@@ -34,6 +36,7 @@ The configuration file should be in a JSON-like format. Each key-value pair repr
 
 - Replace `~/path/to/workspace1` and `~/path/to/workspace2` with the absolute or relative paths to your workspace directories.
 - Use the tilde (`~`) to denote the home directory.
+
 
 ## Usage
 
@@ -81,6 +84,16 @@ The configuration file should be in a JSON-like format. Each key-value pair repr
 
 - **Colors**: The script uses ANSI color codes to enhance readability. You can modify the color codes by changing the variables defined in the script (`RED`, `GREEN`, `BLUE`, etc.).
 - **Workspace Configuration**: Update `vscode_openworkspaces.conf` to add or modify workspaces.
+
+## Recommendation
+
+Make this script easier to use:
+
+   1. Make the script executable
+
+   2. Create a wrapper function in your shell configuration file (~/.bashrc or ~/.zshrc) to call the script easily
+
+   3. Use the script anywhere by typiing the command you used in your wrapper.
 
 ## Troubleshooting
 

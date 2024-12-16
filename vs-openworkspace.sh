@@ -62,10 +62,11 @@ for i in "${!workspace_names[@]}"; do
     continue
   fi
 
-  # List folders in the workspace directory, handling spaces
-  while IFS= read -r -d $'\0' folder; do
+  # List folders in the workspace directory, handling spaces and sorting by modification date (oldest first)
+  folders=()
+  while IFS= read -r folder; do
     folders+=("$folder")
-  done < <(find "$workspace_dir" -mindepth 1 -maxdepth 1 -type d -print0 | sort -rz)
+  done < <(ls -dtr "$workspace_dir"/*/ 2>/dev/null)
 
   # Check if any folders are found
   if [[ ${#folders[@]} -eq 0 ]]; then
