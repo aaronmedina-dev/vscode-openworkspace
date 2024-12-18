@@ -8,7 +8,7 @@ For developers who prefer to have Visual Studio Code focused on a single project
 
 While there are extensions available for Visual Studio Code that provide robust project management features, this script offers a unique approach. By dynamically loading workspace configurations from a configuration file and listing all subdirectories in the configured workspaces, it ensures that only files related to your current work are visible. This minimizes distractions and keeps your focus on the task at hand.
 
-![Image](assets/vs-ow.jpg)
+![Image](assets/vs-ow.gif)
 
 ## Features
 
